@@ -3,5 +3,5 @@ start_file_number=0
 inputdir="$HOME/scsdata/vod/"
 local_ip_1=""
 local_ip_2=""
-streamhost="minicdn-stage.nrk.no"
+streamhost="vcache-vod.example.com"
 influx_tag=""
