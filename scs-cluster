@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# This script is meant to be used via clusterssh. In a cluster of
+# multiple single-core machines, each machine can be configured with a
+# file named clientnumber which contains a single integer (0-99),
+# indicating which input file is to be used (splitfile-00 to
+# splitfile-99).
+#
+# If the cluster consists of multiple multi-core machines which should
+# each be running multiple SCS processes, this can be achieved by
+# manipulating the clientnumber file before the run: Enter the number
+# of the first process to be started on that node. Configure the
+# clusterssh cluster file to start a number of sessions to each node
+# equal to the number of cores on that node.
+#
+# E.g. eight nodes with four cores each: configure clusterssh to start
+# four sessions to each node. Edit the clientnumber files as follows:
+# Node 1: 0 or not present. Node 2: 4, node 3: 8, node 4: 12 etc. Node
+# 1 will then run input files 0-3, node 2: 4-7, node 3: 8-11 etc.
+#
+# The clientnumber files must be reset manually before the next run.
+
+# Set these if using multiple local ips to spread traffic across
+# bonded interfaces:
+# local_ip_1="185.97.188.12"
+# local_ip_2="185.97.188.7"
+
+lock="/tmp/scs-cluster.lock";
+exec 8>$lock;
+
+if flock -x 8; then
+    if [ ! -f clientnumber ]; then
+        echo "0" > clientnumber
+    fi
+    fnumber=$(cat clientnumber)
+    echo "fnumber: \"$fnumber\""
+    
+    if [ $fnumber -lt 10 ]; then
+        number="0"$fnumber
+    else
+        number=$fnumber
+    fi
+    echo "I am client number "$number
+
+    ((fnumber++));
+    echo $fnumber > clientnumber
+
+    if [ ! -z $local_ip_2 ]; then
+        if ((fnumber % 2)); then
+            bind_ip="-b $local_ip_1"
+        else
+            bind_ip="-b $local_ip_2"
+        fi
+    fi
+
+    echo "Connecting via $bind_ip"
+
+    exec 8>&-
+    rm -f /tmp/scs-cluster.lock
+    
+    nodejs --max-old-space-size=4096 scs.js $bind_ip --bw=biased --soft-start --dynamic -d 600 -n 50  -h vcache-vod.example.com -f $HOME/scsdata/vod/splitfile$number | tee /tmp/scs-$number.out
+
+fi

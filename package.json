@@ -1,0 +1,19 @@
+{
+  "name": "streaming-client-sim",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": {
+    "name": "Sigurd Weisteen Larsen",
+    "email": "sigurd.larsen@nrk.no"
+  },
+  "contributors": [
+    {
+      "name": "Erik Inge Bolsø",
+      "email": "erik.inge.bolso@nrk.no"
+    }
+  ],
+  "private": true,
+  "dependencies": {
+    "promise": ""
+  }
+}
