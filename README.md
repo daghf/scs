@@ -16,6 +16,7 @@ npm i
 ```
 
 ## Run multiple instances of SCS:
+* Read doc in scs-multi
 * Edit scs-multirc
 * Edit the scs command line in scs-multi
 ```
