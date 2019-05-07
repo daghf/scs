@@ -1,4 +1,4 @@
-max_clients=4
+max_instances=8
 start_file_number=0
 inputdir="$HOME/scsdata/vod/"
 local_ip_1=""

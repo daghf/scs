@@ -27,15 +27,28 @@
 #
 #
 # This script is meant to be used on multi-core machines from a single
-# ssh session. Will start a number of processes running under nohup in
-# the background.
+# ssh session. Will start a number of SCS processes running under
+# nohup in the background, typically one per CPU core. On our
+# hardware, each SCS process was able to keep about 200 HLS clients
+# running, so 32 cores running 32 SCS processes should be able to
+# simulate more than 6000 clients.
 #
-# Set max_clients in the rc file to configure number of SCS processes
-# to be started, typically equal to number of CPU cores.
+# You have to prepare input files beforehand. I used the script
+# splitfile.pl to split a traffic log into 80 files (splitfile00 to
+# splitfile79). The script sends input lines 0, 80, 160 etc to
+# splitfile-00, lines 1, 81, 161 etc to splitfile01, etc. The result
+# is multiple input files covering the whole traffic log
+# timespan. This produced reasonably realistic cache behaviour. See
+# splitfile.pl.
 #
-# Set $start-file-number in the rc file to synchronize multiple
-# machines running different input files (e.g. node 1: files 0-19,
-# node 2: 20-39, node 3: 40-59).
+# Set max_instances in the rc file to configure number of SCS
+# processes to be started, typically equal to number of CPU cores.
+#
+# Set start_file_number in the rc file to synchronize multiple
+# machines running different input files. Example: If you want node 1
+# to run files 0-19, node 2: 20-39, node 3: 40-59, then set
+# start_file_number to 0 on node 1, 20 on node 2, 40 on node 3. And
+# set max_instances to 20 for all of them.
 #
 # Support for multiple local IP addresses to spread traffic across
 # bonded interfaces.
@@ -52,7 +65,7 @@ else
     fnumber=$start_file_number
 fi
 
-while [ $nprocesses -lt $max_clients ]; do
+while [ $nprocesses -lt $max_instances ]; do
     if [ $one_verbose_process -eq 1 ]; then
         if [ $nprocesses -eq 0 ]; then
             verbose="-v";
