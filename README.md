@@ -64,14 +64,14 @@ Run two stream clients, start both immediately, attach to vcache-vod.example.com
 ```
 Note that the lines in /tmp/streams.txt should be paths, not complete URLs. If they are complete URLs, SCS will take host and protocol from the URLs and ignore the command line parameters.
 
-Run 50 clients, start them with a random delay averaging 10 seconds, otherwise as above:
+Run 50 clients, start them with a random delay of up to 10 seconds, otherwise as above:
 
 ```
 ./scs -n 50 -d 10 -h vcache-vod.example.com -f /tmp/streams.txt
 ```
 
-Start 10 % of clients immediately, ramp quickly to 200 clients, keep trying to add more clients as long as server still seems ok, start them with a random delay averaging 60 seconds, otherwise as above:
+Start 10 % of clients immediately, ramp quickly to 200 clients, keep trying to add more clients as long as server still seems ok
 
 ```
-./scs --immediate 10 -n 200 --dynamic -d 60 -h vcache-vod.example.com -f /tmp/streams.txt
+./scs --immediate 10 -n 200 --dynamic -h vcache-vod.example.com -f /tmp/streams.txt
 ```
