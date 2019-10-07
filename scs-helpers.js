@@ -141,10 +141,18 @@ global.parseUrl = function parseUrl(url) {
   let result = {};
   let parts = url.split("://");
   let firstslash;
+  let portsep;
   
   firstslash = parts[1].indexOf("/");
   result.proto    = parts[0];
   result.hostname = parts[1].substring(0, firstslash);
+
+  portsep = result.hostname.indexOf(":");
+  if (portsep != -1) {
+    result.port = result.hostname.substring(portsep + 1);
+    result.hostname = result.hostname.substring(0, portsep);
+  }
+
   result.path     = parts[1].substring(firstslash);
   
   return result;
